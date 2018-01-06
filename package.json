@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "Standalone WWW client for Scratch",
   "scripts": {
-    "start": "make start",
+    "start": "node ./dev-server/index.js",
+    "clean": "rm -rf ./build && rm -rf ./intl && mkdir build && mkdir intl",
+    "translations": "node ./bin/get-localized-urls localized-urls.json && node ./bin/build-locales node_modules/scratchr2_translations/www/translations intl",
     "stop": "make stop",
-    "test": "make test",
-    "smoke": "make smoke",
-    "watch": "make watch",
-    "build": "make build",
-    "dev": "make watch && make start &"
+    "test": "npm run lint && npm run build && npm run tap",
+    "lint": "eslint . --ext .js,.jsx,.json && sass-lint -v ./src/*.scss && sass-lint -v ./src/**/*.scss",
+    "tap": "tap ./test/{unit,functional,localization}/*.js",
+    "smoke": "tap ./test/integration/smoke-testing/*.js --timeout=3600",
+    "watch": "watch",
+    "build": "npm run clean && npm run translations && webpack --bail",
+    "dev": "watch && npm start"
   },
   "repository": {
     "type": "git",
